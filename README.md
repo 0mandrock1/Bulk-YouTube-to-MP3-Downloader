@@ -21,13 +21,14 @@ All three tools must be available in your system PATH.
 
 ```
 ver2/
-├── add-links.bat              # Main script for adding links
-├── bulk-youtube-download-mp3.bat
-├── links.json                 # Auto-generated link queue
+├── add-links.bat                    # Main script for adding links
+├── bulk-youtube-download-mp3.bat    # Main script for downloading
+├── links.json                       # Auto-generated link queue
 ├── README.md
-├── downloads/                 # Output folder for downloaded MP3s
+├── downloads/                       # Output folder for downloaded MP3s
 └── src/
-    └── add-links.ps1          # PowerShell implementation
+    ├── add-links.ps1                # Link manager (PowerShell)
+    └── bulk-download.ps1            # Downloader (PowerShell)
 ```
 
 ## Usage
@@ -70,9 +71,8 @@ Or with additional yt-dlp arguments:
 bulk-youtube-download-mp3.bat --audio-quality 192
 ```
 
-### Features
-
-- Automatic JSON parsing from `links.json`
+**Features:**
+- Automatic JSON parsing from `links.json` (supports new JSON format)
 - **Playlist support** - automatically downloads all videos from playlists
 - Downloads best available audio quality
 - Embeds subtitles, thumbnails, and metadata
