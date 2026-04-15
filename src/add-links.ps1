@@ -75,6 +75,20 @@ while (-not $shouldExit) {
         continue
     }
     
+    # Clean up unnecessary parameters
+    # Remove pp parameter (telemetry)
+    $link = $link -replace "&pp=[^&]*", ""
+    $link = $link -replace "^pp=[^&]*&", ""
+    
+    # Remove start_radio parameter but keep the link
+    # (user can still download the radio if they want the original)
+    # Just notify them
+    if ($link -match "start_radio=1") {
+        Write-Host "Note: removing start_radio parameter from URL" -ForegroundColor Gray
+        $link = $link -replace "&start_radio=1", ""
+        $link = $link -replace "start_radio=1&", ""
+    }
+    
     # Check for duplicate
     if ($link -in $links) {
         Write-Host "Error: this link already exists" -ForegroundColor Yellow
