@@ -17,6 +17,19 @@ All three tools must be available in your system PATH.
 2. Clone or download this repository
 3. Place the scripts in your desired directory
 
+## Project Structure
+
+```
+ver2/
+├── add-links.bat              # Main script for adding links
+├── bulk-youtube-download-mp3.bat
+├── links.json                 # Auto-generated link queue
+├── README.md
+├── downloads/                 # Output folder for downloaded MP3s
+└── src/
+    └── add-links.ps1          # PowerShell implementation
+```
+
 ## Usage
 
 ### Step 1: Add Links
@@ -27,11 +40,21 @@ Run `add-links.bat` to add YouTube links to the queue:
 add-links.bat
 ```
 
-- Prompted to enter links one by one
-- Press Enter after each link
-- Enter any text without "http" to finish (e.g., "N", "done", "exit")
-- A `links.json` file will be created with all entered links
-- You can add YouTube video links or playlist links
+**First**, choose an option:
+- **Option 1** - Create new file (clears existing links)
+- **Option 2** - Add links to existing file (append mode)
+
+**Then**, enter YouTube links one by one:
+- Link must be from YouTube (`youtube.com` or `youtu.be`)
+- Duplicate links are automatically rejected
+- Supports links with query parameters: `https://youtu.be/tXug39t8lx4?si=...`
+- Special characters like `&`, `?`, `%` are handled correctly
+
+**Exit** the script by typing:
+- `N` - Finish and save
+- `exit`, `quit`, `q`, `e` - Quit without saving
+
+A `links.json` file will be created with all valid YouTube links in JSON format.
 
 ### Step 2: Download
 
