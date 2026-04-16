@@ -12,7 +12,7 @@ function Get-CleanFilename {
     $title = $title -replace '\[[^\]]*\]', ''
     $title = $title -replace '\{[^}]*\}', ''
     # CJK/fullwidth brackets
-    $title = $title -replace '[【】『』「」〔〕《》〈〉]', ''
+    $title = $title -replace '[\u3010\u3011\u300E\u300F\u300C\u300D\u3014\u3015\u300A\u300B\u3008\u3009]', ''
     # Misc noise characters
     $title = $title -replace '[|#@\$%\^=\+`~]', ''
     # Collapse and trim whitespace/dashes
