@@ -80,13 +80,25 @@ while (-not $shouldExit) {
     $link = $link -replace "&pp=[^&]*", ""
     $link = $link -replace "^pp=[^&]*&", ""
     
-    # Remove start_radio parameter but keep the link
-    # (user can still download the radio if they want the original)
-    # Just notify them
+    # Remove start_radio parameter silently
     if ($link -match "start_radio=1") {
-        Write-Host "Note: removing start_radio parameter from URL" -ForegroundColor Gray
         $link = $link -replace "&start_radio=1", ""
         $link = $link -replace "start_radio=1&", ""
+        Write-Host "Note: removed start_radio parameter" -ForegroundColor Gray
+    }
+
+    # Remove list parameter (playlist) — ask user first
+    if ($link -match "[?&]list=") {
+        Write-Host "Warning: URL contains a playlist (list=...). Remove it and download only this video? (y/n)" -ForegroundColor Yellow
+        $stripList = Read-Host "Choice"
+        if ($stripList -imatch "^(y|yes|да|д)$") {
+            $link = $link -replace "&list=[^&]*", ""
+            $link = $link -replace "[?]list=[^&]*&", "?"
+            $link = $link -replace "[?]list=[^&]*$", ""
+            Write-Host "Note: removed list parameter" -ForegroundColor Gray
+        } else {
+            Write-Host "Note: keeping list parameter" -ForegroundColor Gray
+        }
     }
     
     # Check for duplicate

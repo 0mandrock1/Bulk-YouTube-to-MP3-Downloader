@@ -1,5 +1,29 @@
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 
+function Get-CleanFilename {
+    param([string]$basename)
+
+    # Strip YouTube ID at the end: [xxxxxxxxxxx]
+    $ytIdMatch = [regex]::Match($basename, '\s*\[([A-Za-z0-9_-]{11})\]$')
+    $title     = if ($ytIdMatch.Success) { $basename.Substring(0, $ytIdMatch.Index) } else { $basename }
+
+    # Remove bracket groups and their contents
+    $title = $title -replace '\([^)]*\)', ''
+    $title = $title -replace '\[[^\]]*\]', ''
+    $title = $title -replace '\{[^}]*\}', ''
+    # CJK/fullwidth brackets
+    $title = $title -replace '[【】『』「」〔〕《》〈〉]', ''
+    # Misc noise characters
+    $title = $title -replace '[|#@\$%\^=\+`~]', ''
+    # Collapse and trim whitespace/dashes
+    $title = $title -replace '\s{2,}', ' '
+    $title = $title -replace '[-\s]+$', ''
+    $title = $title -replace '^[-\s]+', ''
+    $title = $title.Trim()
+
+    return $title
+}
+
 Write-Host "Bulk YouTube to MP3 Downloader" -ForegroundColor Cyan
 Write-Host "by mandrock0 (based on work EDM115)" -ForegroundColor Gray
 Write-Host ""
@@ -110,6 +134,31 @@ foreach ($url in $links) {
 }
 
 Write-Host "Download completed." -ForegroundColor Green
+Write-Host ""
+
+# Rename files: strip brackets/noise from title, preserve [ytid]
+Write-Host "Cleaning filenames..." -ForegroundColor Yellow
+$renamed = 0
+Get-ChildItem "downloads\*.mp3" | ForEach-Object {
+    $original = $_.Name
+    $cleaned  = (Get-CleanFilename $_.BaseName) + $_.Extension
+
+    if ($cleaned -ne $original) {
+        $dest = Join-Path $_.DirectoryName $cleaned
+        if (-not (Test-Path $dest)) {
+            Rename-Item $_.FullName $dest
+            Write-Host "  $original" -ForegroundColor DarkGray
+            Write-Host "  -> $cleaned" -ForegroundColor Gray
+            $renamed++
+        } else {
+            Write-Host "  SKIP (conflict): $cleaned" -ForegroundColor Yellow
+        }
+    }
+}
+if ($renamed -eq 0) {
+    Write-Host "  No renames needed." -ForegroundColor DarkGray
+}
+Write-Host ""
 Write-Host "Your files are in the ""downloads"" folder" -ForegroundColor Green
 Write-Host ""
 
